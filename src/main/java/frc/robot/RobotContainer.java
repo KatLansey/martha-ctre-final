@@ -16,10 +16,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.DriveCommands.DriveRobotCentric;
-import frc.robot.Limelights.LimelightSubsystem;
-import frc.robot.Limelights.LimelightCommands.LockOnAprilTag;
-import frc.robot.Limelights.LimelightCommands.TrackObject;
-import frc.robot.Limelights.LimelightCommands.TurnToAngle;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
@@ -40,16 +36,8 @@ public class RobotContainer {
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
-    public final LimelightSubsystem limelightLeft = new LimelightSubsystem("limelight");
-    public final LimelightSubsystem limelightRight = new LimelightSubsystem("limelight-fourtwo");
-    public final LimelightSubsystem limelightBack = new LimelightSubsystem("limelight-four");
-
 
     public RobotContainer() {
-        limelightLeft.setPipeline(1);
-        limelightBack.setPipeline(1);
-        limelightRight.setPipeline(1);
-
         configureBindings();
     }
 
@@ -75,10 +63,6 @@ public class RobotContainer {
         joystick.y().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
         joystick.start().whileTrue(drivetrain.applyRequest(()->brake));
         joystick.b().whileTrue(new DriveRobotCentric(drivetrain, joystick));
-
-
-        joystick.a().whileTrue(new TrackObject(drivetrain, limelightRight, 1));
-        joystick.x().whileTrue(new LockOnAprilTag(drivetrain, limelightRight, 1, joystick, false));
 
 
         // // Run SysId routines when holding back/start and X/Y.
