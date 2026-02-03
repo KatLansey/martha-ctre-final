@@ -25,12 +25,12 @@ public class TrackObject extends Command {
   private LimelightSubsystem m_Limelight;
   private CommandSwerveDrivetrain m_Drivetrain;
   private Integer m_pipeline;
-  private PIDController xController = new PIDController(0.2, 0.0001, 0.0085);//.0045);
-  private PIDController yController = new PIDController(0.4, 0.0001, 0.02);
-  private PIDController thetaController = new PIDController(6, 0, 0.1);
+  private PIDController xController = new PIDController(0.1,0,0);//.0045); //0.2, 0.0001, 0.0085
+  private PIDController yController = new PIDController(0.15,0,0);
+  private PIDController thetaController = new PIDController(0.035, 0.001, 0);
   private double targetx = 0;
-  private double targety = 14;
-  private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
+  private double targety = 20;
+  private double MaxAngularRate = CommandConstants.MaxAngularRate;
   
 
   private boolean targeting = false;
@@ -93,7 +93,7 @@ public class TrackObject extends Command {
 		
 		} 
     
-    m_Drivetrain.setControl(drive.withVelocityX(ySpeed*(CommandConstants.MaxSpeed/3)).withVelocityY(xSpeed*(CommandConstants.MaxSpeed/3)).withRotationalRate(thetaOutput*MaxAngularRate));
+    m_Drivetrain.setControl(drive.withVelocityX(-ySpeed*(CommandConstants.MaxSpeed/3)).withVelocityY(xSpeed*(CommandConstants.MaxSpeed/3)).withRotationalRate(thetaOutput*MaxAngularRate));
   }
 
   // Called once the command ends or is interrupted.

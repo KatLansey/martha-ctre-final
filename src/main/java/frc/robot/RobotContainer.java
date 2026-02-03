@@ -77,8 +77,8 @@ public class RobotContainer {
         joystick.b().whileTrue(new DriveRobotCentric(drivetrain, joystick));
 
 
-        joystick.a().whileTrue(new TrackObject(drivetrain, limelightRight, 1));
-        joystick.x().whileTrue(new LockOnAprilTag(drivetrain, limelightRight, 1, joystick, false));
+        joystick.a().whileTrue(new TrackObject(drivetrain, limelightLeft, 1));
+        //joystick.x().whileTrue(new LockOnAprilTag(drivetrain, limelightRight, 1, joystick, false));
 
 
         // // Run SysId routines when holding back/start and X/Y.
