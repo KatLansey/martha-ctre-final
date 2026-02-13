@@ -18,6 +18,8 @@ public class LimelightSubsystem extends SubsystemBase {
   /** Creates a new LimeLight. */
 
   private String Limelight;
+  private double mountAngle; //degrees
+  private double elevation; //cm
 
   public LimelightSubsystem(String LimelightName) {
     /**
@@ -28,6 +30,13 @@ public class LimelightSubsystem extends SubsystemBase {
      */
 
     Limelight = LimelightName;
+    if (Limelight == "limelight-fourtwo") {
+      mountAngle = 0;
+      elevation = 5;
+    } else {
+      mountAngle = 15;
+      elevation = 5;
+    }
   }
 
   @Override
@@ -42,7 +51,7 @@ public class LimelightSubsystem extends SubsystemBase {
   }
 
   public double getVerticalAngleOfErrorDegrees(){
-    return getTy() +0;
+    return getTy();
   }
 
 
@@ -102,10 +111,22 @@ public class LimelightSubsystem extends SubsystemBase {
       // double distToCamera = fiducial.distToCamera;  // Distance to camera
       // double distToRobot = fiducial.distToRobot;    // Distance to robot
       // double ambiguity = fiducial.ambiguity;   // Tag pose ambiguity
+    }
+    return id;
   }
-  return id;
-}
-  
+
+  public double getEstDistanceFromHub() {
+    // Distance from limelight to goal
+    // (goalFromFloor - limelightFromFloor) / Math.tan(mountAngle + angleUp)
+    
+    return (60 - elevation) / Math.tan(mountAngle + getTy());
+  }
+
+  public double getPassingRotation() {
+    //distance of hub to ramp is (for now) 2m (TODO: FIX)
+    return getTx() + 2 * Math.asin(2/(2* Math.sqrt(getTx())));
+  }
+
   //TODO: localization stuff
   public void updatePoseEstimation() {}
 
