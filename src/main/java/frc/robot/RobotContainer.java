@@ -10,6 +10,8 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -22,6 +24,7 @@ import frc.robot.Limelights.LimelightCommands.TrackObject;
 import frc.robot.Limelights.LimelightCommands.TurnToAngle;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.LocalizationSubsystem;
 
 public class RobotContainer {
     private double MaxSpeed = 0.5 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -40,10 +43,13 @@ public class RobotContainer {
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
+    public final Field2d field = new Field2d();
+
     public final LimelightSubsystem limelightLeft = new LimelightSubsystem("limelight");
-    public final LimelightSubsystem limelightRight = new LimelightSubsystem("limelight-fourtwo");
+    public final LimelightSubsystem limelightRight = new LimelightSubsystem("limelight-fourtwo", field);
     public final LimelightSubsystem limelightBack = new LimelightSubsystem("limelight-four");
 
+    public final LocalizationSubsystem localSub = new LocalizationSubsystem(field, limelightRight, limelightBack, limelightLeft);
 
     public RobotContainer() {
         limelightLeft.setPipeline(1);
@@ -77,8 +83,8 @@ public class RobotContainer {
         joystick.b().whileTrue(new DriveRobotCentric(drivetrain, joystick));
 
 
-        joystick.a().whileTrue(new TrackObject(drivetrain, limelightLeft, 1));
-        //joystick.x().whileTrue(new LockOnAprilTag(drivetrain, limelightRight, 1, joystick, false));
+        //joystick.a().whileTrue(new TrackObject(drivetrain, limelightLeft, 1));
+        joystick.x().whileTrue(new LockOnAprilTag(drivetrain, limelightRight, 1, joystick, false));
 
 
         // // Run SysId routines when holding back/start and X/Y.
@@ -89,6 +95,11 @@ public class RobotContainer {
         // joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
         drivetrain.registerTelemetry(logger::telemeterize);
+    }
+
+    public void periodicCall() {
+        
+        SmartDashboard.putData(field);
     }
 
     public Command getAutonomousCommand() {

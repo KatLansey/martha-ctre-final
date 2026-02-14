@@ -1,12 +1,16 @@
 package frc.robot.Limelights;
 
 
+import java.lang.reflect.Field;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -18,6 +22,7 @@ public class LimelightSubsystem extends SubsystemBase {
   /** Creates a new LimeLight. */
 
   private String Limelight;
+  private Field2d field;
 
   public LimelightSubsystem(String LimelightName) {
     /**
@@ -30,10 +35,25 @@ public class LimelightSubsystem extends SubsystemBase {
     Limelight = LimelightName;
   }
 
+  public LimelightSubsystem(String LimelightName, Field2d field) {
+    /**
+     * tx - Horizontal Offset
+     * ty - Vertical Offset 
+     * ta - Area of target 
+     * tv - Target Visible
+     */
+
+    this.field = field;
+    Limelight = LimelightName;
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    updatePoseEstimation();
+    SmartDashboard.putNumber(Limelight + "-A", getTa());
+    SmartDashboard.putNumber(Limelight + "-S", getTs());
+    //SmartDashboard.put("POSE3D", LimelightHelpers.getCameraPose3d_TargetSpace(Limelight));
+    //updatePoseEstimation();
     //SmartDashboard.putNumber("newID", getTargetAprilTagID());
   }
 
@@ -43,6 +63,10 @@ public class LimelightSubsystem extends SubsystemBase {
 
   public double getVerticalAngleOfErrorDegrees(){
     return getTy() +0;
+  }
+
+  public String getLimelightName() {
+    return Limelight;
   }
 
 
@@ -56,6 +80,10 @@ public class LimelightSubsystem extends SubsystemBase {
 
   public double getTa() {
     return LimelightHelpers.getTA(Limelight);
+  }
+
+  public double getTs() {
+    return LimelightHelpers.getTS(Limelight);
   }
 
   public double getXDistance(){
@@ -107,6 +135,6 @@ public class LimelightSubsystem extends SubsystemBase {
 }
   
   //TODO: localization stuff
-  public void updatePoseEstimation() {}
+  
 
 }
