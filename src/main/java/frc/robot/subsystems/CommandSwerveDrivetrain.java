@@ -245,7 +245,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         SmartDashboard.putNumber("CanCoderFrontRight", getModule(1).getEncoder().getPosition().getValueAsDouble());
         SmartDashboard.putNumber("CanCoderBackLeft", getModule(2).getEncoder().getPosition().getValueAsDouble());
         SmartDashboard.putNumber("CanCoderBackRight", getModule(3).getEncoder().getPosition().getValueAsDouble());
+        SmartDashboard.putNumber("RobotRotation", getPigeon2().getYaw().getValueAsDouble());
 
+    }
+
+    public double getRobotAngle() {
+        return getPigeon2().getYaw().getValueAsDouble();
     }
 
     public Pose2d getPose(){
@@ -255,7 +260,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private void startSimThread() {
         m_lastSimTime = Utils.getCurrentTimeSeconds();
 
-        /* Run simulation at a faster rate so PID gains behave more reasonably */
+        /* Run simulation at a faster rate so D gains behave more reasonably */
         m_simNotifier = new Notifier(() -> {
             final double currentTime = Utils.getCurrentTimeSeconds();
             double deltaTime = currentTime - m_lastSimTime;
