@@ -122,9 +122,11 @@ public class LimelightSubsystem extends SubsystemBase {
     return (60 - elevation) / Math.tan(mountAngle + getTy());
   }
 
-  public double getPassingRotation() {
-    //distance of hub to ramp is (for now) 2m (TODO: FIX)
-    return getTx() + 2 * Math.asin(2/(2* Math.sqrt(getTx())));
+  public double getPassingRotation(double distanceToTarget) {
+    //distance of april to ramp is (for now) 2m (TODO: FIX)
+    // c = a/cos(tx) or just a
+    // angle = arcsin(distanceToTarget/c (opposite/hypotenuse))
+    return getTx() + 2 * Math.asin(distanceToTarget/getTa());
   }
 
   //TODO: localization stuff
