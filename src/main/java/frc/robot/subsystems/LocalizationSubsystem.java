@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Limelights.LimelightHelpers;
 import frc.robot.Limelights.LimelightSubsystem;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -20,6 +21,7 @@ public class LocalizationSubsystem extends SubsystemBase {
   private LimelightSubsystem limelight3;
   private CommandSwerveDrivetrain drivetrain;
   private Pose2d localPose = new Pose2d();
+  private Pose3d localPose3d = new Pose3d();
 
   public LocalizationSubsystem(CommandSwerveDrivetrain drivetrain, Field2d field, LimelightSubsystem limelight42, LimelightSubsystem limelight4, LimelightSubsystem limelight3) {
     this.drivetrain = drivetrain;
@@ -70,6 +72,40 @@ public class LocalizationSubsystem extends SubsystemBase {
 
   public double calcHubAngle() {
     return Math.atan(Math.abs(y-hubY)/Math.abs(x-hubX))*(180/Math.PI);
+  }
+
+  public Pose3d get3DEstimator() {
+    if(limelight42.hasTarget()) {
+      SmartDashboard.putString("Estimator3D", "Limelight42");
+      localPose3d = LimelightHelpers.getBotPose3d_wpiBlue(limelight42.getLimelightName());
+    } else if (limelight4.hasTarget()) {
+      SmartDashboard.putString("Estimator3D", "Limelight4");
+      localPose3d = LimelightHelpers.getBotPose3d_wpiBlue(limelight4.getLimelightName());
+    } else if (limelight3.hasTarget()) {
+      SmartDashboard.putString("Estimator3D", "Limelight3");
+      localPose3d = LimelightHelpers.getBotPose3d_wpiBlue(limelight3.getLimelightName());
+    } else {
+      if (!SmartDashboard.getString("Estimator3D", "N/A").equals("Drivetrain")) {
+        //drivetrain.resetPose(localPose3d);
+      }
+      SmartDashboard.putString("Estimator3D", "Drivetrain");
+      //localPose3d = drivetrain.getState().Pose3d;
+    }
+    return localPose3d;
+  }
+
+  public void updatePose3dEstimation() {
+    if (field != null) {
+      field.setRobotPose(getEstimator().getMeasureX(), getEstimator().getMeasureY(), new Rotation2d(drivetrain.getRobotAngle()));
+
+      SmartDashboard.putNumber("RobotX", field.getRobotPose().getX());
+      SmartDashboard.putNumber("RobotY", field.getRobotPose().getY());
+      x = field.getRobotPose().getX();
+      y = field.getRobotPose().getY();
+      // √((x-hubX)^2 + (y-hubY)^2) = distance
+      SmartDashboard.putNumber("DistanceFromHub", Math.sqrt(Math.pow(Math.abs(x-hubX), 2)+Math.pow(Math.abs(y-hubY), 2)));
+    }
+    
   }
 
   @Override
