@@ -4,12 +4,6 @@
 
 package frc.robot.Limelights.newLimelightCommands;
 
-import static edu.wpi.first.units.Units.MetersPerSecond;
-
-import java.util.function.Supplier;
-
-import org.xml.sax.SAXException;
-
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -17,12 +11,8 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.CommandConstants;
-import frc.robot.Limelights.LimelightSubsystem;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 public class AimAtAngle extends Command {
   private frc.robot.subsystems.CommandSwerveDrivetrain drivetrain;
@@ -69,7 +59,7 @@ public class AimAtAngle extends Command {
 		thetaController.setSetpoint(setpoint);
 
     if (!thetaController.atSetpoint()){
-      thetaOutput = thetaController.calculate(drivetrain.getRobotAngle(), angle);
+      thetaOutput = thetaController.calculate(drivetrain.getRobotAngle()%360, angle);
     }
     
     drivetrain.setControl(

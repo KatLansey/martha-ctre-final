@@ -22,6 +22,7 @@ import frc.robot.Limelights.LimelightSubsystem;
 import frc.robot.Limelights.LimelightCommands.LockOnAprilTag;
 import frc.robot.Limelights.LimelightCommands.TrackObject;
 import frc.robot.Limelights.LimelightCommands.TurnToAngle;
+import frc.robot.Limelights.newLimelightCommands.AimAtAngle;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.LocalizationSubsystem;
@@ -49,7 +50,7 @@ public class RobotContainer {
     public final LimelightSubsystem limelightRight = new LimelightSubsystem("limelight-fourtwo", field);
     public final LimelightSubsystem limelightBack = new LimelightSubsystem("limelight-four");
 
-    public final LocalizationSubsystem localSub = new LocalizationSubsystem(field, limelightRight, limelightBack, limelightLeft);
+    public final LocalizationSubsystem localSub = new LocalizationSubsystem(drivetrain, field, limelightRight, limelightBack, limelightLeft);
 
     public RobotContainer() {
         limelightLeft.setPipeline(1);
@@ -84,8 +85,8 @@ public class RobotContainer {
 
 
         //joystick.a().whileTrue(new TrackObject(drivetrain, limelightLeft, 1));
-        joystick.x().whileTrue(new LockOnAprilTag(drivetrain, limelightRight, 1, joystick, false));
-
+        //joystick.x().whileTrue(new LockOnAprilTag(drivetrain, limelightRight, 1, joystick, false));
+        joystick.a().whileTrue(new AimAtAngle(drivetrain, joystick, 50));
 
         // // Run SysId routines when holding back/start and X/Y.
         // // Note that each routine should be run exactly once in a single log.
@@ -98,7 +99,7 @@ public class RobotContainer {
     }
 
     public void periodicCall() {
-        
+
         SmartDashboard.putData(field);
     }
 
