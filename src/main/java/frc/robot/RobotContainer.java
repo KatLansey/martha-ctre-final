@@ -23,6 +23,8 @@ import frc.robot.Limelights.LimelightCommands.LockOnAprilTag;
 import frc.robot.Limelights.LimelightCommands.TrackObject;
 import frc.robot.Limelights.LimelightCommands.TurnToAngle;
 import frc.robot.Limelights.newLimelightCommands.AimAtAngle;
+import frc.robot.Limelights.newLimelightCommands.AimAtAngleManual;
+import frc.robot.Limelights.newLimelightCommands.AimAtAngleRadian;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.LocalizationSubsystem;
@@ -47,7 +49,7 @@ public class RobotContainer {
     public final Field2d field = new Field2d();
 
     public final LimelightSubsystem limelightLeft = new LimelightSubsystem("limelight");
-    public final LimelightSubsystem limelightRight = new LimelightSubsystem("limelight-fourtwo", field);
+    public final LimelightSubsystem limelightRight = new LimelightSubsystem("limelight-fourtwo");
     public final LimelightSubsystem limelightBack = new LimelightSubsystem("limelight-four");
 
     public final LocalizationSubsystem localSub = new LocalizationSubsystem(drivetrain, field, limelightRight, limelightBack, limelightLeft);
@@ -87,19 +89,12 @@ public class RobotContainer {
         //joystick.a().whileTrue(new TrackObject(drivetrain, limelightLeft, 1));
         //joystick.x().whileTrue(new LockOnAprilTag(drivetrain, limelightRight, 1, joystick, false));
         joystick.a().whileTrue(new AimAtAngle(drivetrain, joystick, 50));
-
-        // // Run SysId routines when holding back/start and X/Y.
-        // // Note that each routine should be run exactly once in a single log.
-        // joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-        // joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-        // joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        // joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+        joystick.x().whileTrue(new AimAtAngleManual(drivetrain, joystick, 50));
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }
 
     public void periodicCall() {
-
         SmartDashboard.putData(field);
     }
 

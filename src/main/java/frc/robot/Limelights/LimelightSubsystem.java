@@ -24,7 +24,6 @@ public class LimelightSubsystem extends SubsystemBase {
   private String Limelight;
   private double mountAngle; //degrees
   private double elevation; //cm
-  private Field2d field;
 
   public LimelightSubsystem(String LimelightName) {
     /**
@@ -42,18 +41,6 @@ public class LimelightSubsystem extends SubsystemBase {
       mountAngle = 15;
       elevation = 5;
     }
-  }
-
-  public LimelightSubsystem(String LimelightName, Field2d field) {
-    /**
-     * tx - Horizontal Offset
-     * ty - Vertical Offset 
-     * ta - Area of target 
-     * tv - Target Visible
-     */
-
-    this.field = field;
-    Limelight = LimelightName;
   }
 
   @Override

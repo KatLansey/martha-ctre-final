@@ -14,26 +14,28 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.CommandConstants;
 
-public class AimAtAngle extends Command {
+public class AimAtAngleRadian extends Command {
   private frc.robot.subsystems.CommandSwerveDrivetrain drivetrain;
 
   private PIDController thetaController = new PIDController(0.025, 0, 0);
 
   private boolean targeting = false;
   private CommandXboxController controller;
-  private double angle = 0;
+  private double radian = 0;
+  private double tolerance = Math.toRadians(4);
   private double setpoint = 0;
+  private double currentRadian = 0;
 
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
     .withDriveRequestType(DriveRequestType.OpenLoopVoltage).withDeadband(CommandConstants.MaxSpeed * 0.1);
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
-  public AimAtAngle(CommandSwerveDrivetrain drivetrain, CommandXboxController controller, double angle) {
+  public AimAtAngleRadian(CommandSwerveDrivetrain drivetrain, CommandXboxController controller, double angle) {
     addRequirements(drivetrain);
     this.drivetrain = drivetrain;
     this.controller = controller;
-    this.angle = angle;
+    this.radian = angle*(Math.PI/180);
   }
   
   // Called when the command is initially scheduled.
@@ -47,11 +49,12 @@ public class AimAtAngle extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    currentRadian = Math.abs((drivetrain.getRobotAngle()*(Math.PI/180))%(2*Math.PI));
     SmartDashboard.putBoolean("Aligning", true);
-    SmartDashboard.putNumber("Align Goal", angle);
-    SmartDashboard.putNumber("targeting error", Math.abs(drivetrain.getRobotAngle()%360) - angle);
+    SmartDashboard.putNumber("Align Goal", radian);
+    SmartDashboard.putNumber("targeting error", currentRadian - radian);
     SmartDashboard.putNumber("pid targeting error", thetaController.getError());
-    SmartDashboard.putNumber("RobotModAngle", Math.abs(drivetrain.getRobotAngle()%360));
+    SmartDashboard.putString("Robot Current Radian", Math.round(currentRadian/Math.PI*100.0)/100.0 + "pi");
     
 
     double thetaOutput = 0;
@@ -59,10 +62,10 @@ public class AimAtAngle extends Command {
     double xOutput = controller.getLeftY();
     double yOutput = controller.getLeftX();
 
-		thetaController.setSetpoint(angle);
+		thetaController.setSetpoint(radian);
 
     if (!thetaController.atSetpoint()){
-      thetaOutput = thetaController.calculate(Math.abs(drivetrain.getRobotAngle()%360), angle);
+      thetaOutput = thetaController.calculate(currentRadian, radian);
       SmartDashboard.putBoolean("At Setpoint", false);
     } else {
       SmartDashboard.putBoolean("At Setpoint", true);
@@ -83,6 +86,6 @@ public class AimAtAngle extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return Math.abs(drivetrain.getRobotAngle()%360) < angle + 4 && Math.abs(drivetrain.getRobotAngle()%360) > angle - 4;
+    return Math.abs(currentRadian - radian) < tolerance;
   }
 }

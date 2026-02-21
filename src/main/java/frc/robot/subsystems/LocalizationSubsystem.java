@@ -124,8 +124,6 @@ public class LocalizationSubsystem extends SubsystemBase {
         x = field.getRobotPose().getX();
         y = field.getRobotPose().getY();
         rotation = field.getRobotPose().getRotation().getDegrees();
-
-        //field.setRobotPose(x, y, new Rotation2d((drivetrain.getRobotAngle()%365)*(Math.PI/180)));
       }
 
       SmartDashboard.putNumber("RobotX", x);

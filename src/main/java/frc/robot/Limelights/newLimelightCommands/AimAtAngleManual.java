@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.CommandConstants;
 
-public class AimAtAngle extends Command {
+public class AimAtAngleManual extends Command {
   private frc.robot.subsystems.CommandSwerveDrivetrain drivetrain;
 
   private PIDController thetaController = new PIDController(0.025, 0, 0);
@@ -29,7 +29,7 @@ public class AimAtAngle extends Command {
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
-  public AimAtAngle(CommandSwerveDrivetrain drivetrain, CommandXboxController controller, double angle) {
+  public AimAtAngleManual(CommandSwerveDrivetrain drivetrain, CommandXboxController controller, double angle) {
     addRequirements(drivetrain);
     this.drivetrain = drivetrain;
     this.controller = controller;
@@ -47,22 +47,30 @@ public class AimAtAngle extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    
+    //Math.abs((drivetrain.getRobotAngle()%360)-angle) < Math.abs((drivetrain.getRobotAngle()%360)-(angle+360))
+    double robotAngleMod = Math.abs(drivetrain.getRobotAngle()%360);
+    double robotAngleBase = Math.round(drivetrain.getRobotAngle()/360)*360;
+    if (robotAngleMod>angle+180) {
+      thetaController.setSetpoint(angle+robotAngleBase+360);
+    } else {
+      thetaController.setSetpoint(angle+robotAngleBase);
+    }
+
+    SmartDashboard.putNumber("Adjusted Align Goal", thetaController.getSetpoint());
     SmartDashboard.putBoolean("Aligning", true);
     SmartDashboard.putNumber("Align Goal", angle);
-    SmartDashboard.putNumber("targeting error", Math.abs(drivetrain.getRobotAngle()%360) - angle);
+    SmartDashboard.putNumber("targeting error", Math.abs(drivetrain.getRobotAngle()) - thetaController.getSetpoint());
     SmartDashboard.putNumber("pid targeting error", thetaController.getError());
-    SmartDashboard.putNumber("RobotModAngle", Math.abs(drivetrain.getRobotAngle()%360));
-    
+    SmartDashboard.putNumber("RobotModAngle", Math.abs(drivetrain.getRobotAngle()));
 
     double thetaOutput = 0;
 
     double xOutput = controller.getLeftY();
     double yOutput = controller.getLeftX();
 
-		thetaController.setSetpoint(angle);
-
     if (!thetaController.atSetpoint()){
-      thetaOutput = thetaController.calculate(Math.abs(drivetrain.getRobotAngle()%360), angle);
+      thetaOutput = thetaController.calculate(drivetrain.getRobotAngle(), thetaController.getSetpoint());
       SmartDashboard.putBoolean("At Setpoint", false);
     } else {
       SmartDashboard.putBoolean("At Setpoint", true);
@@ -83,6 +91,6 @@ public class AimAtAngle extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return Math.abs(drivetrain.getRobotAngle()%360) < angle + 4 && Math.abs(drivetrain.getRobotAngle()%360) > angle - 4;
+    return thetaController.atSetpoint();
   }
 }
